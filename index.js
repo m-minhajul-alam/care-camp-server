@@ -25,6 +25,7 @@ async function run() {
     // await client.connect();
 
     const userCollection = client.db("careCampDB").collection("users");
+    const campCollection = client.db("careCampDB").collection("camps");
 
     // users related api
     app.get("/users", async (req, res) => {
@@ -53,6 +54,12 @@ async function run() {
           .status(500)
           .send({ message: "Error inserting user", error: error.message });
       }
+    });
+
+    // camp related api
+    app.get("/camps", async (req, res) => {
+      const result = await campCollection.find().toArray();
+      res.send(result);
     });
 
     app.post("/camps", async (req, res) => {
