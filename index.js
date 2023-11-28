@@ -26,6 +26,9 @@ async function run() {
 
     const userCollection = client.db("careCampDB").collection("users");
     const campCollection = client.db("careCampDB").collection("camps");
+    const upcomingCampCollection = client
+      .db("careCampDB")
+      .collection("upcomingCamps");
 
     // users related api
     app.get("/users", async (req, res) => {
@@ -60,7 +63,6 @@ async function run() {
     app.get("/camps", async (req, res) => {
       const result = await campCollection.find().toArray();
       res.send(result);
-      
     });
 
     app.post("/camps", async (req, res) => {
