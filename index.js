@@ -60,6 +60,7 @@ async function run() {
     app.get("/camps", async (req, res) => {
       const result = await campCollection.find().toArray();
       res.send(result);
+      
     });
 
     app.post("/camps", async (req, res) => {
