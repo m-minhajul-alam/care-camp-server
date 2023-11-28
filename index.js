@@ -71,6 +71,12 @@ async function run() {
       res.send(result);
     });
 
+    // upcoming camp related api
+    app.get("/upcomingCamps", async (req, res) => {
+      const result = await upcomingCampCollection.find().toArray();
+      res.send(result);
+    });
+
     app.post("/upcomingCamps", async (req, res) => {
       const item = req.body;
       const result = await upcomingCampCollection.insertOne(item);
