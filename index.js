@@ -1,8 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
-var jwt = require("jsonwebtoken");
+const { MongoClient, ObjectId, ServerApiVersion } = require("mongodb");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 
@@ -30,30 +29,6 @@ async function run() {
     const upcomingCampCollection = client
       .db("careCampDB")
       .collection("upcomingCamps");
-
-    // jwt related api
-    app.post("/jwt", async (req, res) => {
-      const user = req.body;
-      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "1h",
-      });
-      res.send({ token });
-    });
-
-    // middlewares
-    const verifyToken = (req, res, next) => {
-      if (!req.headers.authorization) {
-        return res.status(401).send({ message: "unauthorized access" });
-      }
-      const token = req.headers.authorization.split(" ")[1];
-      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-        if (err) {
-          return res.status(401).send({ message: "unauthorized access" });
-        }
-        req.decoded = decoded;
-        next();
-      });
-    };
 
     // users related api
     app.get("/users", async (req, res) => {
@@ -83,11 +58,17 @@ async function run() {
           .send({ message: "Error inserting user", error: error.message });
       }
     });
-    
 
     // camp related api
-    app.get("/camps", verifyToken, async (req, res) => {
+    app.get("/camps", async (req, res) => {
       const result = await campCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get("/camps/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await campCollection.findOne(query);
       res.send(result);
     });
 
