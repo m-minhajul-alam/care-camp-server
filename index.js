@@ -26,6 +26,7 @@ async function run() {
 
     const userCollection = client.db("careCampDB").collection("users");
     const campCollection = client.db("careCampDB").collection("camps");
+    const regCampCollection = client.db("careCampDB").collection("regCamps");
     const upcomingCampCollection = client
       .db("careCampDB")
       .collection("upcomingCamps");
@@ -89,6 +90,19 @@ async function run() {
       const result = await upcomingCampCollection.insertOne(item);
       res.send(result);
     });
+
+    // registered camp aip
+    app.get("/regCamps", async (req, res) => {
+      const result = await regCampCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.post("/regCamps", async (req, res) => {
+      const item = req.body;
+      const result = await regCampCollection.insertOne(item);
+      res.send(result);
+    });
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
