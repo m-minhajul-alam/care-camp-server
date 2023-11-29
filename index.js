@@ -92,11 +92,6 @@ async function run() {
     });
 
     // registered camp aip
-    app.get("/regCamps", async (req, res) => {
-      const result = await regCampCollection.find().toArray();
-      res.send(result);
-    });
-
     app.post("/regCamps", async (req, res) => {
       const item = req.body;
       const result = await regCampCollection.insertOne(item);
