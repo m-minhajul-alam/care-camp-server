@@ -40,7 +40,20 @@ async function run() {
       res.send({ token });
     });
 
-    
+    // middlewares
+    const verifyToken = (req, res, next) => {
+      if (!req.headers.authorization) {
+        return res.status(401).send({ message: "unauthorized access" });
+      }
+      const token = req.headers.authorization.split(" ")[1];
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+          return res.status(401).send({ message: "unauthorized access" });
+        }
+        req.decoded = decoded;
+        next();
+      });
+    };
 
     // users related api
     app.get("/users", async (req, res) => {
@@ -70,9 +83,10 @@ async function run() {
           .send({ message: "Error inserting user", error: error.message });
       }
     });
+    
 
     // camp related api
-    app.get("/camps", async (req, res) => {
+    app.get("/camps", verifyToken, async (req, res) => {
       const result = await campCollection.find().toArray();
       res.send(result);
     });
