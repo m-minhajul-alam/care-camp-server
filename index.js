@@ -115,9 +115,39 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/upcomingCamps/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await upcomingCampCollection.findOne(query);
+      res.send(result);
+    });
+
     app.post("/upcomingCamps", async (req, res) => {
       const item = req.body;
       const result = await upcomingCampCollection.insertOne(item);
+      res.send(result);
+    });
+
+    app.patch("/upcomingCamps/:id", async (req, res) => {
+      const upcomingCamp = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedCapm = {
+        $set: {
+          campName: upcomingCamp.campName,
+          image: upcomingCamp.image,
+          campFees: upcomingCamp.campFees,
+          scheduledDateTime: upcomingCamp.scheduledDateTime,
+          venueLocation: upcomingCamp.venueLocation,
+          specializedService: upcomingCamp.specializedService,
+          healthcareProfessional: upcomingCamp.healthcareProfessional,
+          targetAudience: upcomingCamp.targetAudience,
+          description: upcomingCamp.description,
+          userEmail: upcomingCamp.userEmail,
+        },
+      };
+
+      const result = await upcomingCampCollection.updateOne(filter, updatedCapm);
       res.send(result);
     });
 
