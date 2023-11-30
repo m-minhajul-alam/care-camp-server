@@ -121,6 +121,7 @@ async function run() {
       res.send(result);
     });
 
+
     // registered camp aip
     app.get("/regCamps", async (req, res) => {
       const result = await regCampCollection.find().toArray();
@@ -137,6 +138,13 @@ async function run() {
     app.post("/regCamps", async (req, res) => {
       const item = req.body;
       const result = await regCampCollection.insertOne(item);
+      res.send(result);
+    });
+
+    app.delete("/regCamps/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await regCampCollection.deleteOne(query);
       res.send(result);
     });
 
