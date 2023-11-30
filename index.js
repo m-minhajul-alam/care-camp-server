@@ -79,6 +79,36 @@ async function run() {
       res.send(result);
     });
 
+    app.patch("/camps/:id", async (req, res) => {
+      const camp = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedCapm = {
+        $set: {
+          campName: camp.campName,
+          image: camp.image,
+          campFees: camp.campFees,
+          scheduledDateTime: camp.scheduledDateTime,
+          venueLocation: camp.venueLocation,
+          specializedService: camp.specializedService,
+          healthcareProfessional: camp.healthcareProfessional,
+          targetAudience: camp.targetAudience,
+          description: camp.description,
+          userEmail: camp.userEmail,
+        },
+      };
+
+      const result = await campCollection.updateOne(filter, updatedCapm);
+      res.send(result);
+    });
+
+    app.delete("/camps/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await campCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // upcoming camp related api
     app.get("/upcomingCamps", async (req, res) => {
       const result = await upcomingCampCollection.find().toArray();
@@ -92,12 +122,23 @@ async function run() {
     });
 
     // registered camp aip
+    app.get("/regCamps", async (req, res) => {
+      const result = await regCampCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get("/regCamps/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await regCampCollection.findOne(query);
+      res.send(result);
+    });
+
     app.post("/regCamps", async (req, res) => {
       const item = req.body;
       const result = await regCampCollection.insertOne(item);
       res.send(result);
     });
-
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
