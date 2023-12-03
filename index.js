@@ -3,6 +3,8 @@ const app = express();
 const cors = require("cors");
 const { MongoClient, ObjectId, ServerApiVersion } = require("mongodb");
 require("dotenv").config();
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
 const port = process.env.PORT || 5000;
 
 app.use(cors());
@@ -30,6 +32,10 @@ async function run() {
     const upcomingCampCollection = client
       .db("careCampDB")
       .collection("upcomingCamps");
+    const feedbackCollection = client.db("careCampDB").collection("feedbacks");
+    const healthTipsCollection = client
+      .db("careCampDB")
+      .collection("healthTips");
 
     // users related api
     app.get("/users", async (req, res) => {
@@ -74,8 +80,8 @@ async function run() {
     });
 
     app.post("/camps", async (req, res) => {
-      const item = req.body;
-      const result = await campCollection.insertOne(item);
+      const camp = req.body;
+      const result = await campCollection.insertOne(camp);
       res.send(result);
     });
 
@@ -123,8 +129,8 @@ async function run() {
     });
 
     app.post("/upcomingCamps", async (req, res) => {
-      const item = req.body;
-      const result = await upcomingCampCollection.insertOne(item);
+      const upcomingCamp = req.body;
+      const result = await upcomingCampCollection.insertOne(upcomingCamp);
       res.send(result);
     });
 
@@ -147,7 +153,10 @@ async function run() {
         },
       };
 
-      const result = await upcomingCampCollection.updateOne(filter, updatedCapm);
+      const result = await upcomingCampCollection.updateOne(
+        filter,
+        updatedCapm
+      );
       res.send(result);
     });
 
@@ -172,8 +181,8 @@ async function run() {
     });
 
     app.post("/regCamps", async (req, res) => {
-      const item = req.body;
-      const result = await regCampCollection.insertOne(item);
+      const regCamp = req.body;
+      const result = await regCampCollection.insertOne(regCamp);
       res.send(result);
     });
 
@@ -181,6 +190,30 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await regCampCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    // feedback aip
+    app.get("/feedbacks", async (req, res) => {
+      const result = await feedbackCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.post("/feedbacks", async (req, res) => {
+      const feedback = req.body;
+      const result = await feedbackCollection.insertOne(feedback);
+      res.send(result);
+    });
+
+    // health tips aip
+    app.get("/healthTips", async (req, res) => {
+      const result = await healthTipsCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.post("/healthTips", async (req, res) => {
+      const healthTips = req.body;
+      const result = await healthTipsCollection.insertOne(healthTips);
       res.send(result);
     });
 
